@@ -10,6 +10,9 @@ namespace Lab1_cm
     {
         private static string infinitCountOfSolutionsString = "Infinit number system's solutions";
         private static string noSolutionsString = "No system's solutions";
+        private static string methodIsNotApplyableString = "Method is not applyable!";
+        private static string incorrectMatrixString = "Matrix has incorrect lengths!";
+        private static string matricesCannotBeMultipliedString = "Matricies cannot be multiplied!";
 
         public static double epsilan = Math.Pow(10, -4);
         public static double epsilanIter = Math.Pow(10, -3);
@@ -235,7 +238,7 @@ namespace Lab1_cm
                     int index = FindNoZeroColumn(matrix, i);
 
                     if (index == -1)
-                        throw new Exception(ResponseAboutExceptionalSolution(matrix[i, colCount - 1] == 0)); 
+                        throw new Exception(ResponseAboutExceptionalSolution(matrix[i, colCount - 1] == 0));
 
                     SwapColumns(ref matrix, i, index);
 
@@ -248,7 +251,15 @@ namespace Lab1_cm
                 MakeDownEqualToZero(ref matrix, i);
             }
 
+            double[] solution = RetrieveSolution(matrix);
+            for (int i = 0; i < colCount - 1; i++)
+            {
+                double tmp = solution[order[i]];
+                solution[order[i]] = solution[i];
+                solution[i] = tmp;
+            }
 
+            return solution;
         }
 
         private static int FindNoZeroColumn(double[,] matrix, int startIndex)
@@ -281,10 +292,7 @@ namespace Lab1_cm
 
             for (int i = 0; i < rowCount; i++)
             {
-                double tmp = matrix[i, firstIndex];
-
-                matrix[i, firstIndex] = matrix[i, secondIndex];
-                matrix[i, secondIndex] = tmp;
+                Swap(ref matrix[i, firstIndex], ref matrix[i, secondIndex]);
             }
         }
         private static void MakeCoeficientEqualToOne(ref double[,] matrix, int row)
@@ -314,7 +322,7 @@ namespace Lab1_cm
                 double coef = -matrix[i, row];
 
                 for (int j = row; j < colCount; j++)
-                    matrix[i, j] += matrix[row, j] * coef;  
+                    matrix[i, j] += matrix[row, j] * coef;
             }
         }
 
@@ -368,8 +376,173 @@ namespace Lab1_cm
                 solution[index] = newSolution;
                 isInitialize[i] = true;
             }
+
+            return solution;
         }
 
         #endregion
+
+        #region Holeckii's method
+
+        public static double[] HoleckiiMethod(double[,] matrix)
+        {
+            if (!IsApplyable(matrix))
+                throw new Exception(methodIsNotApplyableString);
+
+            int colCount = matrix.GetLength(1),
+                rowCount = matrix.GetLength(0);
+
+            if (colCount - 1 != rowCount)
+                throw new Exception(incorrectMatrixString);
+
+            double[,] low, up;
+
+            DetermineLowAndUpMatrix(matrix, out low, out up);
+
+            double[] f = new double[rowCount];
+            for (int i = 0; i < rowCount; i++)
+                f[i] = matrix[i, colCount - 1];
+
+            return GetXSolution(up, GetYSolution(low, f));
+        }
+
+        private static bool IsApplyable(double[,] matrix)
+        {
+            int colCount = matrix.GetLength(1),
+                rowCount = matrix.GetLength(0);
+
+            double determinant = 0;
+            int[] indexes = new int[colCount - 1];
+
+            for (int i = 0; i < indexes.Length; i++)
+                indexes[i] = i;
+
+            do
+            {
+                double newMember = Math.Pow(-1, InversionCount(indexes));
+                for (int i = 0; i < indexes.Length; i++)
+                    newMember *= matrix[i, indexes[i]];
+
+                determinant += newMember;
+            } while (NextSet(ref indexes));
+
+
+            return determinant != 0;
+        }
+        private static bool NextSet(ref int[] set)
+        {
+            int n = set.Length;
+
+            int j = n - 2;
+
+            while (j != -1 && set[j] >= set[j + 1]) j--;
+
+            if (j == -1)
+                return false;
+
+            int k = n - 1;
+
+            while (set[j] >= set[k]) k--;
+
+            Swap(ref set[j], ref set[k]);
+
+            int l = j + 1, r = n - 1;
+
+            while (l < r) Swap(ref set[l--], ref set[r--]);
+
+            return true;
+        }
+        private static void Swap<T>(ref T val1, ref T val2)
+        {
+            T tmp = val1;
+            val1 = val2;
+            val2 = tmp;
+        }
+        private static int InversionCount(int[] indexes)
+        {
+            int length = indexes.Length;
+            int count = 0;
+
+            for (int i = 0; i < length; i++)
+                for (int j = i + 1; j < length; j++)
+                    if (indexes[i] > indexes[j])
+                        count++;
+
+            return count;
+        }
+
+        private static void DetermineLowAndUpMatrix(double[,] matrix, out double[,] low, out double[,] up)
+        {
+            int colCount = matrix.GetLength(1);
+
+            low = new double[colCount - 1, colCount - 1];
+            up = new double[colCount - 1, colCount - 1];
+
+            for (int i = 0; i < colCount - 1; i++)
+            {
+                for (int j = 0; j < colCount - 1; j++)
+                {
+                    if (i >= j)
+                    {
+                        low[i, j] = matrix[i, j];
+                        for (int k = 1; k < j - 1; k++)
+                            low[i, j] -= low[i, k] * up[k, j];
+                    }
+                    else
+                    {
+                        up[i, j] = matrix[i, j];
+                        for (int k = 1; k < i - 1; k++)
+                            up[i, j] -= low[i, k] * up[k, j];
+
+                        up[i, j] /= low[i, i];
+                    }
+
+                    if (i == j)
+                        up[i, j] = 1;
+                }
+            }
+        }
+        private static double[] GetYSolution(double[,] low, double[] f)
+        {
+            int colCount = low.GetLength(1),
+                rowCount = low.GetLength(0);
+
+            double[] solution = new double[colCount];
+
+            for (int i = 0; i < rowCount; i++)
+            {
+                solution[i] = f[i];
+                for (int j = 0; j < i; j++)
+                {
+                    solution[i] -= low[i, j] * solution[j];
+                }
+                solution[i] /= low[i, i];
+            }
+
+            return solution;
+        }
+        private static double[] GetXSolution(double[,] up, double[] y)
+        {
+            int colCount = up.GetLength(1),
+                rowCount = up.GetLength(0);
+
+            double[] solution = new double[colCount];
+
+            for (int i = rowCount - 1; i >= 0; i--)
+            {
+                solution[i] = y[i];
+                for (int j = i + 1; j < rowCount; j++)
+                {
+                    solution[i] -= up[i, j] * solution[j];
+                }
+                solution[i] /= up[i, i];
+            }
+
+            return solution;
+        }
+
+        #endregion
+
+       
     }
 }
