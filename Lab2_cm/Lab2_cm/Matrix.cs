@@ -16,11 +16,11 @@ namespace Lab2_cm
 
         double[,] elements;
 
-        Matrix(double[,] matrix)
+        public Matrix(double[,] matrix)
         {
             this.elements = matrix;
         }
-        Matrix(double[] vector)
+        public Matrix(double[] vector)
         {
             elements = new double[vector.Length, 1];
 

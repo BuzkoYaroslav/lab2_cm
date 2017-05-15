@@ -13,6 +13,7 @@ namespace Lab2_cm
         private static string methodIsNotApplyableString = "Method is not applyable!";
         private static string incorrectMatrixString = "Matrix has incorrect lengths!";
         private static string matricesCannotBeMultipliedString = "Matricies cannot be multiplied!";
+        private static string iterationOverflowString = "Iteration overflow! (Iteration count = {0})";
 
         public static double epsilan = Math.Pow(10, -4);
         public static double epsilanIter = Math.Pow(10, -3);
@@ -430,13 +431,21 @@ namespace Lab2_cm
             Matrix xCurrent = new double[matrix.ColumnsCount],
                    xPrev;
 
+            int count = 0;
+
             do
             {
                 xPrev = xCurrent;
                 xCurrent = bMatrix * xPrev + gVector;
+
+                count++;
             } while (bMatrix.FirstNorm > 0.5 && bMatrix.FirstNorm < 1 &&
                       bMatrix.FirstNorm / (1 - bMatrix.FirstNorm) * (xCurrent - xPrev).FirstNorm <= epsilan ||
-                      (xCurrent - xPrev).FirstNorm <= epsilan);
+                      (xCurrent - xPrev).FirstNorm <= epsilan ||
+                      count == maxIterationCount);
+
+            if (count == maxIterationCount)
+                throw new Exception(string.Format(iterationOverflowString, count));
 
             return xCurrent;
         }
