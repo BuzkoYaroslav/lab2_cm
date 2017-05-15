@@ -140,7 +140,11 @@ namespace Lab2_cm
 
             int l = j + 1, r = n - 1;
 
-            while (l < r) Swap(ref set[l--], ref set[r--]);
+            while (l < r) {
+                Swap(ref set[l], ref set[r]);
+                l++;
+                r--;
+            }
 
             return true;
         }
@@ -218,7 +222,7 @@ namespace Lab2_cm
 
             for (int i = 0; i < matrix1.RowsCount; i++)
                 for (int j = 0; j < matrix1.ColumnsCount; j++)
-                    matrix[i, j] = matrix1[i, j] + matrix[i, j];
+                    matrix[i, j] = matrix1[i, j] + matrix2[i, j];
 
             return matrix;
         }

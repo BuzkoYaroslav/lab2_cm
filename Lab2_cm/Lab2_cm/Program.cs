@@ -8,14 +8,14 @@ namespace Lab2_cm
 {
     class Program
     {
-        static Matrix[] aMatricies = { new Matrix(new double[,] { { 5, 1, 1 }, 
-                                                                 { -3, 8, 1 }, 
-                                                                 { -2, 1, 4 } }),
-                                       new Matrix(new double[,] { { 1, 5, 1 }, 
-                                                                  { -3, 1, 8 }, 
-                                                                  { -2, 4, 1 } }) };
-        static Matrix[] fMatricies = { new Matrix(new double[] { 13, 4, 5}),
-                                       new Matrix(new double[] { 9, 11, 2 }) };
+        static Matrix[] aMatricies = { new Matrix(new double[,] { { 13, 1, -1 }, 
+                                                                 { -1, 10, 3 }, 
+                                                                 { 2, 0, 8 } }),
+                                       new Matrix(new double[,] { { 3, 1, -1 }, 
+                                                                  { -5, 1, 3 }, 
+                                                                  { 2, 0, 1 } }) };
+        static Matrix[] fMatricies = { new Matrix(new double[] { 16, 16, -6}),
+                                       new Matrix(new double[] { 6, -6, 1 }) };
 
         private const string gaussMethodKeySymbol = "G";
         private const string holeckiiMethodKeySymbol = "H";
@@ -33,9 +33,12 @@ namespace Lab2_cm
 
                     Console.WriteLine("Input operation symbol:\n" +
                                       "{0} - Gauss method,\n" +
-                                      "{1} - Holeckii method\n," +
-                                      "{2} - Simple Iteration method," +
-                                      "\n{3} - Exit");
+                                      "{1} - Holeckii method,\n" +
+                                      "{2} - Simple Iteration method,\n" +
+                                      "{3} - Exit", gaussMethodKeySymbol,
+                                                    holeckiiMethodKeySymbol,
+                                                    simpleIterationKeySymbol,
+                                                    endProgramKeySymbol);
                     switch (Console.ReadLine())
                     {
                         case endProgramKeySymbol:

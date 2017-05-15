@@ -250,7 +250,7 @@ namespace Lab2_cm
                 MakeDownEqualToZero(ref matrix, ref f, i);
             }
 
-            Matrix solution = RetrieveSolution(matrix);
+            Matrix solution = RetrieveSolution(matrix, f);
             for (int i = 0; i < matrix.ColumnsCount; i++)
             {
                 double tmp = solution[order[i], 0];
@@ -301,7 +301,7 @@ namespace Lab2_cm
             return hasZeroRow ? infinitCountOfSolutionsString : noSolutionsString;
         }
 
-        private static Matrix RetrieveSolution(Matrix matrix)
+        private static Matrix RetrieveSolution(Matrix matrix, Matrix f)
         {
             double[] solution = new double[matrix.ColumnsCount];
             bool[] isInitialize = new bool[matrix.ColumnsCount];
@@ -316,14 +316,14 @@ namespace Lab2_cm
             {
                 int index = FindNoZeroColumn(matrix, i);
 
-                double newSolution = 1;
+                double newSolution = 0;
 
                 for (int j = index + 1; j < matrix.ColumnsCount; j++)
                 {
                     newSolution -= matrix[i, j] * solution[j];
                 }
 
-                newSolution += matrix[i, matrix.ColumnsCount];
+                newSolution += f[i, 0];
                 newSolution /= matrix[i, index];
 
                 if (newSolution != solution[index] && isInitialize[i])
@@ -357,28 +357,28 @@ namespace Lab2_cm
             low = new double[matrix.RowsCount, matrix.ColumnsCount];
             up = new double[matrix.RowsCount, matrix.ColumnsCount];
 
-            for (int i = 0; i < matrix.RowsCount; i++)
+            int index = 0;
+
+            while (index < matrix.ColumnsCount)
             {
-                for (int j = 0; j < matrix.ColumnsCount; j++)
+                for (int i = index; i < matrix.ColumnsCount; i++)
                 {
-                    if (i >= j)
-                    {
-                        low[i, j] = matrix[i, j];
-                        for (int k = 1; k < j - 1; k++)
-                            low[i, j] -= low[i, k] * up[k, j];
-                    }
-                    else
-                    {
-                        up[i, j] = matrix[i, j];
-                        for (int k = 1; k < i - 1; k++)
-                            up[i, j] -= low[i, k] * up[k, j];
-
-                        up[i, j] /= low[i, i];
-                    }
-
-                    if (i == j)
-                        up[i, j] = 1;
+                    low[i, index] = matrix[i, index];
+                    for (int k = 0; k < index; k++)
+                        low[i, index] -= low[i, k] * up[k, index];
                 }
+
+                up[index, index] = 1;
+                for (int j = index + 1; j < matrix.ColumnsCount; j++)
+                {
+                    up[index, j] = matrix[index, j];
+                    for (int k = 0; k < index; k++)
+                        up[index, j] -= low[index, k] * up[k, j];
+
+                    up[index, j] /= low[index, index];
+                }
+
+                index++;
             }
         }
         private static Matrix GetYSolution(Matrix low, Matrix f)
@@ -423,7 +423,7 @@ namespace Lab2_cm
             if (!matrix.IsNonDegenerate())
                 throw new Exception(methodIsNotApplyableString);
 
-            double alpha = RandomNumber(0, 2.0 / matrix.Transposed().FirstNorm);
+            double alpha = RandomNumber(0, 2.0 / (matrix.Transposed()* matrix).FirstNorm);
 
             Matrix bMatrix = Matrix.UnaryMatrix(matrix.ColumnsCount) - alpha * matrix.Transposed() * matrix,
                    gVector = alpha * matrix.Transposed() * f;
@@ -439,10 +439,10 @@ namespace Lab2_cm
                 xCurrent = bMatrix * xPrev + gVector;
 
                 count++;
-            } while (bMatrix.FirstNorm > 0.5 && bMatrix.FirstNorm < 1 &&
-                      bMatrix.FirstNorm / (1 - bMatrix.FirstNorm) * (xCurrent - xPrev).FirstNorm <= epsilan ||
-                      (xCurrent - xPrev).FirstNorm <= epsilan ||
-                      count == maxIterationCount);
+            } while (!(bMatrix.FirstNorm > 0.5 && bMatrix.FirstNorm < 1 &&
+                       bMatrix.FirstNorm / (1 - bMatrix.FirstNorm) * (xCurrent - xPrev).FirstNorm <= epsilan || 
+                    (xCurrent - xPrev).FirstNorm <= epsilan || 
+                    count == maxIterationCount));
 
             if (count == maxIterationCount)
                 throw new Exception(string.Format(iterationOverflowString, count));
