@@ -238,7 +238,7 @@ namespace Lab2_cm
                     if (index == -1)
                         throw new Exception(ResponseAboutExceptionalSolution(matrix[i, matrix.ColumnsCount - 1] == 0));
 
-                    SwapColumns(ref matrix, i, index);
+                    matrix.SwapColumns(i, index);
 
                     int tmp = order[i];
                     order[i] = order[index];
@@ -270,28 +270,8 @@ namespace Lab2_cm
 
             return -1;
         }
-        private static void SwapColumns(ref Matrix matrix, int firstIndex, int secondIndex)
-        {
-            if (firstIndex < 0 || firstIndex > matrix.ColumnsCount - 1 ||
-                secondIndex < 0 || secondIndex > matrix.ColumnsCount - 1)
-                return;
-
-            if (firstIndex == secondIndex)
-                return;
-
-            for (int i = 0; i < matrix.RowsCount; i++)
-            {
-                double val = matrix[i, firstIndex];
-
-                matrix[i, firstIndex] = matrix[i, secondIndex];
-                matrix[i, secondIndex] = val;
-            }
-        }
         private static void MakeCoeficientEqualToOne(ref Matrix matrix, ref Matrix f, int row)
         {
-            if (CheckIndex(matrix, row))
-                return;
-
             if (matrix[row, row] == 1)
                 return;
 
@@ -304,9 +284,6 @@ namespace Lab2_cm
         }
         private static void MakeDownEqualToZero(ref Matrix matrix, ref Matrix f, int row)
         {
-            if (CheckIndex(matrix, row))
-                return;
-
             for (int i = row + 1; i < matrix.RowsCount; i++)
             {
                 double coef = -matrix[i, row];
@@ -316,14 +293,6 @@ namespace Lab2_cm
 
                 f[i, 0] += f[row, 0] * coef;
             }
-        }
-
-        private static bool CheckIndex(Matrix matrix, int index)
-        {
-            if (index < 0 || index > matrix.ColumnsCount || index > matrix.RowsCount)
-                return false;
-
-            return true;
         }
 
         private static string ResponseAboutExceptionalSolution(bool hasZeroRow)
