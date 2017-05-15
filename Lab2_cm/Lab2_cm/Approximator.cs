@@ -249,12 +249,12 @@ namespace Lab2_cm
                 MakeDownEqualToZero(ref matrix, ref f, i);
             }
 
-            double[] solution = RetrieveSolution(matrix);
+            Matrix solution = RetrieveSolution(matrix);
             for (int i = 0; i < matrix.ColumnsCount; i++)
             {
-                double tmp = solution[order[i]];
-                solution[order[i]] = solution[i];
-                solution[i] = tmp;
+                double tmp = solution[order[i], 0];
+                solution[order[i], 0] = solution[i, 0];
+                solution[i, 0] = tmp;
             }
 
             return solution;
@@ -382,12 +382,6 @@ namespace Lab2_cm
             return GetXSolution(up, GetYSolution(low, f));
         }
 
-        private static void Swap<T>(ref T val1, ref T val2)
-        {
-            T tmp = val1;
-            val1 = val2;
-            val2 = tmp;
-        }
         private static void DetermineLowAndUpMatrix(Matrix matrix, out Matrix low, out Matrix up)
         {
             low = new double[matrix.RowsCount, matrix.ColumnsCount];

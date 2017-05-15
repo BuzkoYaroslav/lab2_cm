@@ -151,6 +151,20 @@ namespace Lab2_cm
             val2 = tmp;
         }
 
+        public void SwapColumns(int firstIndex, int secondIndex)
+        {
+            if (firstIndex == secondIndex)
+                return;
+
+            for (int i = 0; i < RowsCount; i++)
+            {
+                double val = this[i, firstIndex];
+
+                this[i, firstIndex] = this[i, secondIndex];
+                this[i, secondIndex] = val;
+            }
+        }
+
         public bool IsNonDegenerate()
         {
             return Determinant != 0;
