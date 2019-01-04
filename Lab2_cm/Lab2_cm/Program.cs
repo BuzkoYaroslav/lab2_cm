@@ -8,13 +8,13 @@ namespace Lab2_cm
 {
     class Program
     {
-        static Matrix[] aMatricies = { new Matrix(new double[,] { { 13, 1, -1 }, 
-                                                                 { -1, 10, 3 }, 
-                                                                 { 2, 0, 8 } }),
+        static Matrix[] aMatricies = { new Matrix(new double[,] { { 5, 1, 1 }, 
+                                                                 { -3, 8, 1 }, 
+                                                                 { -2, 1, 4 } }),
                                        new Matrix(new double[,] { { 3, 1, -1 }, 
                                                                   { -5, 1, 3 }, 
                                                                   { 2, 0, 1 } }) };
-        static Matrix[] fMatricies = { new Matrix(new double[] { 16, 16, -6}),
+        static Matrix[] fMatricies = { new Matrix(new double[] { 13, 4, 5}),
                                        new Matrix(new double[] { 6, -6, 1 }) };
 
         private const string gaussMethodKeySymbol = "G";

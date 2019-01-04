@@ -237,7 +237,7 @@ namespace Lab2_cm
                     int index = FindNoZeroColumn(matrix, i);
 
                     if (index == -1)
-                        throw new Exception(ResponseAboutExceptionalSolution(matrix[i, matrix.ColumnsCount - 1] == 0));
+                        throw new Exception(ResponseAboutExceptionalSolution(f[i, 0] == 0));
 
                     matrix.SwapColumns(i, index);
 
@@ -423,7 +423,7 @@ namespace Lab2_cm
             if (!matrix.IsNonDegenerate())
                 throw new Exception(methodIsNotApplyableString);
 
-            double alpha = RandomNumber(0, 2.0 / (matrix.Transposed()* matrix).FirstNorm);
+            double alpha = RandomNumber(0, 2.0 / (matrix.Transposed() * matrix).FirstNorm);
 
             Matrix bMatrix = Matrix.UnaryMatrix(matrix.ColumnsCount) - alpha * matrix.Transposed() * matrix,
                    gVector = alpha * matrix.Transposed() * f;

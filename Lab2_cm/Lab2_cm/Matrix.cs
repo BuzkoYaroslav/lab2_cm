@@ -66,7 +66,7 @@ namespace Lab2_cm
             {
                 double norm = -1;
 
-                for (int i = 0; i < ColumnsCount; i++)
+                for (int i = 0; i < RowsCount; i++)
                 {
                     double sum = 0;
                     for (int j = 0; j < ColumnsCount; j++)
